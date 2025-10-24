@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Waste Sessions Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="h-full bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 font-sans">
+  <div class="min-h-screen">
+    <header class="border-b border-white/10 bg-slate-900/70 backdrop-blur-md">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-5">
+        <div>
+          <p class="text-xs uppercase tracking-[0.4em] text-brand-100">Waste Intelligence</p>
+          <h1 class="mt-1 text-2xl font-semibold text-white">Sessions Dashboard</h1>
+          <p class="mt-1 text-sm text-slate-300">Monitor captured utensil sessions and aggregate waste analytics.</p>
+        </div>
+        <a href="/" class="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-brand-500 hover:bg-brand-500/20 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+            <path fill-rule="evenodd" d="M14.53 4.47a.75.75 0 0 1 0 1.06L9.81 10l4.72 4.47a.75.75 0 1 1-1.06 1.06l-5.25-4.97a.75.75 0 0 1 0-1.06l5.25-4.97a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+          </svg>
+          Back to Capture
+        </a>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-6 pb-16 pt-12">
+      <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <article class="rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow-lg ring-1 ring-white/5">
+          <p class="text-xs uppercase tracking-wide text-slate-400">Total Sessions</p>
+          <p class="mt-2 text-3xl font-semibold text-white">{{ metrics.total_sessions }}</p>
+          <p class="mt-1 text-xs text-slate-400">Recorded utensil interactions</p>
+        </article>
+        <article class="rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow-lg ring-1 ring-white/5">
+          <p class="text-xs uppercase tracking-wide text-slate-400">Total Volume (ml)</p>
+          <p class="mt-2 text-3xl font-semibold text-white">{{ metrics.total_volume_ml | round(1) if metrics.total_volume_ml else 0 }}</p>
+          <p class="mt-1 text-xs text-slate-400">Summed across sessions</p>
+        </article>
+        <article class="rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow-lg ring-1 ring-white/5">
+          <p class="text-xs uppercase tracking-wide text-slate-400">Average Volume (ml)</p>
+          <p class="mt-2 text-3xl font-semibold text-white">{{ metrics.mean_volume_ml | round(1) if metrics.mean_volume_ml is not none else '-' }}</p>
+          <p class="mt-1 text-xs text-slate-400">Per captured session</p>
+        </article>
+        <article class="rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow-lg ring-1 ring-white/5">
+          <p class="text-xs uppercase tracking-wide text-slate-400">Average Percent Fill</p>
+          <p class="mt-2 text-3xl font-semibold text-white">{{ (metrics.mean_percent_fill | round(1)) ~ '%' if metrics.mean_percent_fill is not none else '-' }}</p>
+          <p class="mt-1 text-xs text-slate-400">Normalized fill rate</p>
+        </article>
+      </section>
+
+      <section class="mt-10 rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-xl ring-1 ring-white/5">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold text-white">Recent Sessions</h2>
+            <p class="mt-1 text-sm text-slate-300">Latest ingestion ordered by capture time.</p>
+          </div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/40 bg-brand-500/10 px-4 py-1 text-xs font-medium text-brand-100">
+            Live Sync
+            <span class="h-2 w-2 animate-pulse rounded-full bg-brand-500"></span>
+          </div>
+        </div>
+
+        {% if sessions %}
+        <div class="mt-6 overflow-hidden rounded-2xl border border-white/5">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-white/10 text-left text-sm text-slate-200">
+              <thead class="bg-white/5 text-xs uppercase tracking-wide text-slate-300">
+                <tr>
+                  <th scope="col" class="px-4 py-3">ID</th>
+                  <th scope="col" class="px-4 py-3">Utensil</th>
+                  <th scope="col" class="px-4 py-3">Avg Volume (ml)</th>
+                  <th scope="col" class="px-4 py-3">Avg Percent Fill</th>
+                  <th scope="col" class="px-4 py-3">Frames</th>
+                  <th scope="col" class="px-4 py-3">Started</th>
+                  <th scope="col" class="px-4 py-3">Ended</th>
+                  <th scope="col" class="px-4 py-3">Recorded</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                {% for session in sessions %}
+                <tr class="transition hover:bg-white/5">
+                  <td class="whitespace-nowrap px-4 py-3 font-mono text-xs text-slate-400">{{ session.id }}</td>
+                  <td class="px-4 py-3">{{ session.utensil_type }}</td>
+                  <td class="px-4 py-3">{{ session.average_volume_ml | round(1) if session.average_volume_ml is not none else '-' }}</td>
+                  <td class="px-4 py-3">{{ session.average_percent_fill | round(1) ~ '%' if session.average_percent_fill is not none else '-' }}</td>
+                  <td class="px-4 py-3">{{ session.sample_count }}</td>
+                  <td class="px-4 py-3">{{ session.started_at }}</td>
+                  <td class="px-4 py-3">{{ session.ended_at }}</td>
+                  <td class="px-4 py-3">{{ session.created_at }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% else %}
+        <div class="mt-6 rounded-2xl border border-dashed border-white/20 bg-white/5 px-6 py-12 text-center">
+          <h3 class="text-lg font-semibold text-white">No sessions yet</h3>
+          <p class="mt-2 text-sm text-slate-300">Run the live capture to begin collecting utensil waste data.</p>
+        </div>
+        {% endif %}
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const source = new EventSource('/dashboard/events');
+      source.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data || '{}');
+          if (payload.type === 'session_saved') {
+            window.location.reload();
+          }
+        } catch (err) {
+          console.error('dashboard event parse error', err);
+        }
+      };
+      source.onerror = () => {
+        console.warn('dashboard event stream disconnected');
+      };
+    })();
+  </script>
+</body>
+</html>
