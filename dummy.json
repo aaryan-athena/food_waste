@@ -1,0 +1,1207 @@
+{
+  "overall": {
+    "label": "Overall",
+    "unit": "kg",
+    "description": "Aggregate view across all preparation stages.",
+    "historical": {
+      "day": {
+        "label": "Last 24 hours",
+        "value": 17.39,
+        "change": "+3.1% vs prior day"
+      },
+      "week": {
+        "label": "Last 7 days",
+        "value": 120.78,
+        "change": "+2.4% vs prior week"
+      },
+      "month": {
+        "label": "Last 30 days",
+        "value": 480.69,
+        "change": "+5.7% vs prior month"
+      },
+      "year": {
+        "label": "Year to date",
+        "value": 5893.48,
+        "change": "+1.8% vs last year"
+      }
+    },
+    "hourly_seed": 0.79,
+    "hourly_variance": 0.32,
+    "daily_seed": 13.72,
+    "daily_variance": 3.19,
+    "contribution": [
+      {
+        "label": "Raw Ingredients",
+        "value": 181.91
+      },
+      {
+        "label": "Semi-Finished",
+        "value": 120.05
+      },
+      {
+        "label": "Finished Goods",
+        "value": 81.46
+      }
+    ],
+    "food_types": {},
+    "hourly_trend": [
+      {
+        "label": "00:00",
+        "value": 0.59
+      },
+      {
+        "label": "01:00",
+        "value": 0.52
+      },
+      {
+        "label": "02:00",
+        "value": 0.49
+      },
+      {
+        "label": "03:00",
+        "value": 0.47
+      },
+      {
+        "label": "04:00",
+        "value": 0.44
+      },
+      {
+        "label": "05:00",
+        "value": 0.41
+      },
+      {
+        "label": "06:00",
+        "value": 0.49
+      },
+      {
+        "label": "07:00",
+        "value": 0.55
+      },
+      {
+        "label": "08:00",
+        "value": 0.69
+      },
+      {
+        "label": "09:00",
+        "value": 0.77
+      },
+      {
+        "label": "10:00",
+        "value": 0.84
+      },
+      {
+        "label": "11:00",
+        "value": 0.91
+      },
+      {
+        "label": "12:00",
+        "value": 0.87
+      },
+      {
+        "label": "13:00",
+        "value": 0.83
+      },
+      {
+        "label": "14:00",
+        "value": 0.8
+      },
+      {
+        "label": "15:00",
+        "value": 0.76
+      },
+      {
+        "label": "16:00",
+        "value": 0.72
+      },
+      {
+        "label": "17:00",
+        "value": 0.67
+      },
+      {
+        "label": "18:00",
+        "value": 0.64
+      },
+      {
+        "label": "19:00",
+        "value": 0.61
+      },
+      {
+        "label": "20:00",
+        "value": 0.6
+      },
+      {
+        "label": "21:00",
+        "value": 0.57
+      },
+      {
+        "label": "22:00",
+        "value": 0.55
+      },
+      {
+        "label": "23:00",
+        "value": 0.53
+      }
+    ],
+    "daily_trend": [
+      {
+        "label": "18 Nov",
+        "value": 14.46
+      },
+      {
+        "label": "19 Nov",
+        "value": 14.95
+      },
+      {
+        "label": "20 Nov",
+        "value": 15.68
+      },
+      {
+        "label": "21 Nov",
+        "value": 15.93
+      },
+      {
+        "label": "22 Nov",
+        "value": 16.66
+      },
+      {
+        "label": "23 Nov",
+        "value": 17.39
+      },
+      {
+        "label": "24 Nov",
+        "value": 18.13
+      },
+      {
+        "label": "25 Nov",
+        "value": 18.38
+      },
+      {
+        "label": "26 Nov",
+        "value": 18.01
+      },
+      {
+        "label": "27 Nov",
+        "value": 18.62
+      }
+    ],
+    "last_updated": "2025-11-27T15:13:00+05:30"
+  },
+  "raw": {
+    "label": "Raw Ingredients",
+    "unit": "kg",
+    "description": "Trim loss and unused ingredients from prep.",
+    "historical": {
+      "day": {
+        "label": "Last 24 hours",
+        "value": 7.11,
+        "change": "+4.4% vs prior day"
+      },
+      "week": {
+        "label": "Last 7 days",
+        "value": 49.24,
+        "change": "+2.1% vs prior week"
+      },
+      "month": {
+        "label": "Last 30 days",
+        "value": 199.43,
+        "change": "+4.8% vs prior month"
+      },
+      "year": {
+        "label": "Year to date",
+        "value": 2160.9,
+        "change": "+0.9% vs last year"
+      }
+    },
+    "hourly_seed": 0.41,
+    "hourly_variance": 0.14,
+    "daily_seed": 7.11,
+    "daily_variance": 1.47,
+    "contribution": [
+      {
+        "label": "Leafy Greens",
+        "value": 51.45
+      },
+      {
+        "label": "Root Vegetables",
+        "value": 37.98
+      },
+      {
+        "label": "Aromatics & Herbs",
+        "value": 25.73
+      },
+      {
+        "label": "Proteins Prep",
+        "value": 20.21
+      }
+    ],
+    "food_types": {
+      "Leafy Greens": {
+        "label": "Leafy Greens",
+        "unit": "kg",
+        "description": "Includes lettuce, spinach, kale and salad mixes.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 2.21,
+            "change": "+6.3% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 15.44,
+            "change": "+3.8% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 61.01,
+            "change": "+7.1% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 661.5,
+            "change": "+1.5% vs last year"
+          }
+        },
+        "hourly_seed": 0.2,
+        "hourly_variance": 0.06,
+        "daily_seed": 2.45,
+        "daily_variance": 0.73,
+        "contribution": [
+          {
+            "label": "Prep Trim",
+            "value": 14.7
+          },
+          {
+            "label": "Spoilage",
+            "value": 10.54
+          },
+          {
+            "label": "Buffet Return",
+            "value": 7.84
+          }
+        ]
+      },
+      "Root Vegetables": {
+        "label": "Root Vegetables",
+        "unit": "kg",
+        "description": "Potatoes, carrots, beets and similar roots.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.72,
+            "change": "+3.1% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 11.76,
+            "change": "+1.7% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 46.8,
+            "change": "+4.6% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 502.25,
+            "change": "+0.8% vs last year"
+          }
+        },
+        "hourly_seed": 0.14,
+        "hourly_variance": 0.05,
+        "daily_seed": 1.96,
+        "daily_variance": 0.61,
+        "contribution": [
+          {
+            "label": "Peeling Loss",
+            "value": 12.49
+          },
+          {
+            "label": "Over-prep",
+            "value": 9.55
+          },
+          {
+            "label": "Spoilage",
+            "value": 6.62
+          }
+        ]
+      },
+      "Aromatics & Herbs": {
+        "label": "Aromatics & Herbs",
+        "unit": "kg",
+        "description": "Includes onions, garlic, cilantro and herbs.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.1,
+            "change": "+2.8% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 7.84,
+            "change": "+1.5% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 29.64,
+            "change": "+5.4% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 330.75,
+            "change": "+1.1% vs last year"
+          }
+        },
+        "hourly_seed": 0.11,
+        "hourly_variance": 0.04,
+        "daily_seed": 1.34,
+        "daily_variance": 0.36,
+        "contribution": [
+          {
+            "label": "Prep Waste",
+            "value": 9.06
+          },
+          {
+            "label": "Spoilage",
+            "value": 6.37
+          },
+          {
+            "label": "Inventory Adjustments",
+            "value": 4.66
+          }
+        ]
+      },
+      "Proteins Prep": {
+        "label": "Proteins Prep",
+        "unit": "kg",
+        "description": "Trim from chicken, seafood and red meats.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.34,
+            "change": "+1.8% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 9.31,
+            "change": "+1.1% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 37.48,
+            "change": "+3.2% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 421.4,
+            "change": "+0.6% vs last year"
+          }
+        },
+        "hourly_seed": 0.12,
+        "hourly_variance": 0.04,
+        "daily_seed": 1.59,
+        "daily_variance": 0.49,
+        "contribution": [
+          {
+            "label": "Butchering Loss",
+            "value": 8.33
+          },
+          {
+            "label": "Fat Trim",
+            "value": 6.86
+          },
+          {
+            "label": "Spoilage",
+            "value": 5.02
+          }
+        ]
+      }
+    },
+    "hourly_trend": [
+      {
+        "label": "00:00",
+        "value": 0.36
+      },
+      {
+        "label": "01:00",
+        "value": 0.32
+      },
+      {
+        "label": "02:00",
+        "value": 0.3
+      },
+      {
+        "label": "03:00",
+        "value": 0.29
+      },
+      {
+        "label": "04:00",
+        "value": 0.28
+      },
+      {
+        "label": "05:00",
+        "value": 0.26
+      },
+      {
+        "label": "06:00",
+        "value": 0.3
+      },
+      {
+        "label": "07:00",
+        "value": 0.34
+      },
+      {
+        "label": "08:00",
+        "value": 0.42
+      },
+      {
+        "label": "09:00",
+        "value": 0.48
+      },
+      {
+        "label": "10:00",
+        "value": 0.53
+      },
+      {
+        "label": "11:00",
+        "value": 0.56
+      },
+      {
+        "label": "12:00",
+        "value": 0.54
+      },
+      {
+        "label": "13:00",
+        "value": 0.52
+      },
+      {
+        "label": "14:00",
+        "value": 0.49
+      },
+      {
+        "label": "15:00",
+        "value": 0.47
+      },
+      {
+        "label": "16:00",
+        "value": 0.45
+      },
+      {
+        "label": "17:00",
+        "value": 0.41
+      },
+      {
+        "label": "18:00",
+        "value": 0.4
+      },
+      {
+        "label": "19:00",
+        "value": 0.38
+      },
+      {
+        "label": "20:00",
+        "value": 0.37
+      },
+      {
+        "label": "21:00",
+        "value": 0.35
+      },
+      {
+        "label": "22:00",
+        "value": 0.34
+      },
+      {
+        "label": "23:00",
+        "value": 0.33
+      }
+    ],
+    "daily_trend": [
+      {
+        "label": "18 Nov",
+        "value": 8.96
+      },
+      {
+        "label": "19 Nov",
+        "value": 9.26
+      },
+      {
+        "label": "20 Nov",
+        "value": 9.72
+      },
+      {
+        "label": "21 Nov",
+        "value": 9.88
+      },
+      {
+        "label": "22 Nov",
+        "value": 10.32
+      },
+      {
+        "label": "23 Nov",
+        "value": 10.78
+      },
+      {
+        "label": "24 Nov",
+        "value": 11.24
+      },
+      {
+        "label": "25 Nov",
+        "value": 11.39
+      },
+      {
+        "label": "26 Nov",
+        "value": 11.16
+      },
+      {
+        "label": "27 Nov",
+        "value": 11.54
+      }
+    ],
+    "last_updated": "2025-11-27T15:13:00+05:30"
+  },
+  "semi_finished": {
+    "label": "Semi-Finished",
+    "unit": "kg",
+    "description": "Sauces, gravies and par-cooked components prepared in advance.",
+    "historical": {
+      "day": {
+        "label": "Last 24 hours",
+        "value": 5.63,
+        "change": "+1.8% vs prior day"
+      },
+      "week": {
+        "label": "Last 7 days",
+        "value": 40.67,
+        "change": "+2.9% vs prior week"
+      },
+      "month": {
+        "label": "Last 30 days",
+        "value": 157.29,
+        "change": "+6.1% vs prior month"
+      },
+      "year": {
+        "label": "Year to date",
+        "value": 1887.72,
+        "change": "+2.2% vs last year"
+      }
+    },
+    "hourly_seed": 0.35,
+    "hourly_variance": 0.12,
+    "daily_seed": 5.63,
+    "daily_variance": 1.23,
+    "contribution": [
+      {
+        "label": "Sauces & Gravies",
+        "value": 43.48
+      },
+      {
+        "label": "Par-cooked Staples",
+        "value": 38.95
+      },
+      {
+        "label": "Baked Prep",
+        "value": 25.97
+      }
+    ],
+    "food_types": {
+      "Sauces & Gravies": {
+        "label": "Sauces & Gravies",
+        "unit": "kg",
+        "description": "Slow-reduced sauces prepared in bulk.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.96,
+            "change": "+2.1% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 14.46,
+            "change": "+2.9% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 54.63,
+            "change": "+5.5% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 637.0,
+            "change": "+1.4% vs last year"
+          }
+        },
+        "hourly_seed": 0.14,
+        "hourly_variance": 0.04,
+        "daily_seed": 2.08,
+        "daily_variance": 0.49,
+        "contribution": [
+          {
+            "label": "Batch Overcook",
+            "value": 11.76
+          },
+          {
+            "label": "Unsold Stock",
+            "value": 10.04
+          },
+          {
+            "label": "Quality Holds",
+            "value": 6.62
+          }
+        ]
+      },
+      "Par-cooked Staples": {
+        "label": "Par-cooked Staples",
+        "unit": "kg",
+        "description": "Blanched rice, pasta and beans for quick service.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.59,
+            "change": "+1.5% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 11.27,
+            "change": "+2.4% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 43.85,
+            "change": "+4.9% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 512.05,
+            "change": "+1.7% vs last year"
+          }
+        },
+        "hourly_seed": 0.12,
+        "hourly_variance": 0.04,
+        "daily_seed": 1.72,
+        "daily_variance": 0.49,
+        "contribution": [
+          {
+            "label": "Holding Loss",
+            "value": 10.29
+          },
+          {
+            "label": "Reheat Quality",
+            "value": 7.71
+          },
+          {
+            "label": "Spillage",
+            "value": 5.39
+          }
+        ]
+      },
+      "Baked Prep": {
+        "label": "Baked Prep",
+        "unit": "kg",
+        "description": "Par-baked breads and dessert bases.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.34,
+            "change": "+1.1% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 9.55,
+            "change": "+2.0% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 38.22,
+            "change": "+6.0% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 441.0,
+            "change": "+2.0% vs last year"
+          }
+        },
+        "hourly_seed": 0.11,
+        "hourly_variance": 0.04,
+        "daily_seed": 1.47,
+        "daily_variance": 0.36,
+        "contribution": [
+          {
+            "label": "Proofing Loss",
+            "value": 8.82
+          },
+          {
+            "label": "Over-bake",
+            "value": 7.11
+          },
+          {
+            "label": "Breakage",
+            "value": 5.14
+          }
+        ]
+      }
+    },
+    "hourly_trend": [
+      {
+        "label": "00:00",
+        "value": 0.46
+      },
+      {
+        "label": "01:00",
+        "value": 0.4
+      },
+      {
+        "label": "02:00",
+        "value": 0.38
+      },
+      {
+        "label": "03:00",
+        "value": 0.37
+      },
+      {
+        "label": "04:00",
+        "value": 0.34
+      },
+      {
+        "label": "05:00",
+        "value": 0.33
+      },
+      {
+        "label": "06:00",
+        "value": 0.38
+      },
+      {
+        "label": "07:00",
+        "value": 0.43
+      },
+      {
+        "label": "08:00",
+        "value": 0.54
+      },
+      {
+        "label": "09:00",
+        "value": 0.6
+      },
+      {
+        "label": "10:00",
+        "value": 0.66
+      },
+      {
+        "label": "11:00",
+        "value": 0.7
+      },
+      {
+        "label": "12:00",
+        "value": 0.68
+      },
+      {
+        "label": "13:00",
+        "value": 0.65
+      },
+      {
+        "label": "14:00",
+        "value": 0.62
+      },
+      {
+        "label": "15:00",
+        "value": 0.59
+      },
+      {
+        "label": "16:00",
+        "value": 0.56
+      },
+      {
+        "label": "17:00",
+        "value": 0.53
+      },
+      {
+        "label": "18:00",
+        "value": 0.49
+      },
+      {
+        "label": "19:00",
+        "value": 0.47
+      },
+      {
+        "label": "20:00",
+        "value": 0.47
+      },
+      {
+        "label": "21:00",
+        "value": 0.45
+      },
+      {
+        "label": "22:00",
+        "value": 0.43
+      },
+      {
+        "label": "23:00",
+        "value": 0.41
+      }
+    ],
+    "daily_trend": [
+      {
+        "label": "18 Nov",
+        "value": 11.27
+      },
+      {
+        "label": "19 Nov",
+        "value": 11.66
+      },
+      {
+        "label": "20 Nov",
+        "value": 12.22
+      },
+      {
+        "label": "21 Nov",
+        "value": 12.42
+      },
+      {
+        "label": "22 Nov",
+        "value": 12.99
+      },
+      {
+        "label": "23 Nov",
+        "value": 13.57
+      },
+      {
+        "label": "24 Nov",
+        "value": 14.13
+      },
+      {
+        "label": "25 Nov",
+        "value": 14.33
+      },
+      {
+        "label": "26 Nov",
+        "value": 14.05
+      },
+      {
+        "label": "27 Nov",
+        "value": 14.53
+      }
+    ],
+    "last_updated": "2025-11-27T15:13:00+05:30"
+  },
+  "finished": {
+    "label": "Finished Goods",
+    "unit": "kg",
+    "description": "Prepared meals or plated dishes left unsold.",
+    "historical": {
+      "day": {
+        "label": "Last 24 hours",
+        "value": 4.66,
+        "change": "+0.9% vs prior day"
+      },
+      "week": {
+        "label": "Last 7 days",
+        "value": 30.87,
+        "change": "+1.4% vs prior week"
+      },
+      "month": {
+        "label": "Last 30 days",
+        "value": 123.97,
+        "change": "+3.5% vs prior month"
+      },
+      "year": {
+        "label": "Year to date",
+        "value": 1455.3,
+        "change": "+2.1% vs last year"
+      }
+    },
+    "hourly_seed": 0.32,
+    "hourly_variance": 0.11,
+    "daily_seed": 5.14,
+    "daily_variance": 1.1,
+    "contribution": [
+      {
+        "label": "Main Course Plates",
+        "value": 0.54
+      },
+      {
+        "label": "Grab & Go",
+        "value": 0.97
+      },
+      {
+        "label": "Desserts",
+        "value": 0.95
+      }
+    ],
+    "food_types": {
+      "Main Course Plates": {
+        "label": "Main Course Plates",
+        "unit": "kg",
+        "description": "Buffet and plated entrees discarded post-service.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.83,
+            "change": "+1.2% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 12.49,
+            "change": "+1.9% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 4.49,
+            "change": "+3.6% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 63.1,
+            "change": "+2.2% vs last year"
+          }
+        },
+        "hourly_seed": 0.14,
+        "hourly_variance": 0.04,
+        "daily_seed": 1.83,
+        "daily_variance": 0.49,
+        "contribution": [
+          {
+            "label": "Menu Swaps",
+            "value": 1.04
+          },
+          {
+            "label": "Portion Returns",
+            "value": 0.84
+          },
+          {
+            "label": "Quality Holds",
+            "value": 0.88
+          }
+        ]
+      },
+      "Grab & Go": {
+        "label": "Grab & Go",
+        "unit": "kg",
+        "description": "Packaged meals and sandwiches nearing expiry.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.59,
+            "change": "+0.8% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 10.54,
+            "change": "+1.4% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 41.9,
+            "change": "+3.0% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 487.55,
+            "change": "+1.7% vs last year"
+          }
+        },
+        "hourly_seed": 0.12,
+        "hourly_variance": 0.04,
+        "daily_seed": 1.59,
+        "daily_variance": 0.36,
+        "contribution": [
+          {
+            "label": "Expiry Writes",
+            "value": 9.31
+          },
+          {
+            "label": "Damaged Packs",
+            "value": 0.61
+          },
+          {
+            "label": "Donation Pulls",
+            "value": 5.14
+          }
+        ]
+      },
+      "Desserts": {
+        "label": "Desserts",
+        "unit": "kg",
+        "description": "Cakes and pastries unsold or damaged.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.23,
+            "change": "+0.6% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 7.84,
+            "change": "+1.1% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 32.59,
+            "change": "+3.2% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 384.65,
+            "change": "+1.9% vs last year"
+          }
+        },
+        "hourly_seed": 0.1,
+        "hourly_variance": 0.04,
+        "daily_seed": 1.34,
+        "daily_variance": 0.36,
+        "contribution": [
+          {
+            "label": "Decoration Damage",
+            "value": 0.6
+          },
+          {
+            "label": "Leftover Buffets",
+            "value": 0.87
+          },
+          {
+            "label": "Display Dry-out",
+            "value": 4.41
+          }
+        ]
+      }
+    },
+    "hourly_trend": [
+      {
+        "label": "00:00",
+        "value": 0.32
+      },
+      {
+        "label": "01:00",
+        "value": 0.28
+      },
+      {
+        "label": "02:00",
+        "value": 0.27
+      },
+      {
+        "label": "03:00",
+        "value": 0.26
+      },
+      {
+        "label": "04:00",
+        "value": 0.24
+      },
+      {
+        "label": "05:00",
+        "value": 0.23
+      },
+      {
+        "label": "06:00",
+        "value": 0.27
+      },
+      {
+        "label": "07:00",
+        "value": 0.29
+      },
+      {
+        "label": "08:00",
+        "value": 0.37
+      },
+      {
+        "label": "09:00",
+        "value": 0.41
+      },
+      {
+        "label": "10:00",
+        "value": 0.46
+      },
+      {
+        "label": "11:00",
+        "value": 0.49
+      },
+      {
+        "label": "12:00",
+        "value": 0.47
+      },
+      {
+        "label": "13:00",
+        "value": 0.45
+      },
+      {
+        "label": "14:00",
+        "value": 0.43
+      },
+      {
+        "label": "15:00",
+        "value": 0.41
+      },
+      {
+        "label": "16:00",
+        "value": 0.39
+      },
+      {
+        "label": "17:00",
+        "value": 0.36
+      },
+      {
+        "label": "18:00",
+        "value": 0.34
+      },
+      {
+        "label": "19:00",
+        "value": 0.33
+      },
+      {
+        "label": "20:00",
+        "value": 0.33
+      },
+      {
+        "label": "21:00",
+        "value": 0.31
+      },
+      {
+        "label": "22:00",
+        "value": 0.29
+      },
+      {
+        "label": "23:00",
+        "value": 0.28
+      }
+    ],
+    "daily_trend": [
+      {
+        "label": "18 Nov",
+        "value": 7.8
+      },
+      {
+        "label": "19 Nov",
+        "value": 8.07
+      },
+      {
+        "label": "20 Nov",
+        "value": 8.46
+      },
+      {
+        "label": "21 Nov",
+        "value": 8.6
+      },
+      {
+        "label": "22 Nov",
+        "value": 8.99
+      },
+      {
+        "label": "23 Nov",
+        "value": 4.39
+      },
+      {
+        "label": "24 Nov",
+        "value": 4.79
+      },
+      {
+        "label": "25 Nov",
+        "value": 9.92
+      },
+      {
+        "label": "26 Nov",
+        "value": 4.72
+      },
+      {
+        "label": "27 Nov",
+        "value": 10.05
+      }
+    ],
+    "last_updated": "2025-11-27T15:13:00+05:30"
+  }
+}

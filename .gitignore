@@ -81,8 +81,6 @@ docs/_build/
 .env.*
 !.env.example
 !.env.*.example
-firebase-admin-sdk.json
-*firebase*.json
 
 # Editor / IDE settings
 .vscode/

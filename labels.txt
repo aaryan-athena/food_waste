@@ -1,0 +1,5 @@
+0 Chilli
+1 Onion
+2 Chilla Batter
+3 Potato
+4 Nothing
