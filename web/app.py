@@ -1,7 +1,9 @@
 import base64
 import json
+import math
 import os
 import sys
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 from threading import Lock
 
@@ -21,6 +23,7 @@ if PROJECT_ROOT not in sys.path:
 
 load_dotenv(os.path.join(PROJECT_ROOT, '.env'))
 
+from src.food_classifier import classify_food
 from src.vision import detect_utensil_ellipse, segment_food_in_utensil, estimate_area_and_volume
 
 
@@ -121,6 +124,180 @@ class DashboardEventBroker:
 
 IST_TZ = timezone(timedelta(hours=5, minutes=30))
 UTC_TZ = timezone.utc
+EMPTY_FOOD_LABELS = {'nothing', 'none', 'no_food', 'empty', 'empty_plate'}
+
+
+DIVISION_ALIASES = {
+    'semifinished': 'semi_finished',
+    'semi-finished': 'semi_finished',
+    'semi finished': 'semi_finished',
+}
+
+_DUMMY_DASHBOARD_PATH = os.environ.get('LIVE_DASHBOARD_DUMMY_FILE') or os.path.join(PROJECT_ROOT, 'dummy.json')
+_DUMMY_WASTE_CONFIG = None
+
+
+def _load_dummy_waste_config():
+    global _DUMMY_WASTE_CONFIG
+    if _DUMMY_WASTE_CONFIG is not None:
+        return _DUMMY_WASTE_CONFIG
+    try:
+        with open(_DUMMY_DASHBOARD_PATH, 'r', encoding='utf-8') as handle:
+            _DUMMY_WASTE_CONFIG = json.load(handle)
+    except FileNotFoundError as exc:
+        raise RuntimeError(f'Dummy dashboard data file not found at {_DUMMY_DASHBOARD_PATH}') from exc
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f'Dummy dashboard data at {_DUMMY_DASHBOARD_PATH} is not valid JSON') from exc
+    return _DUMMY_WASTE_CONFIG
+
+
+def _normalize_scope_key(value):
+    if not value:
+        return 'overall'
+    normalized = value.strip().lower()
+    normalized = normalized.replace('-', '_')
+    normalized = normalized.replace(' ', '_')
+    return DIVISION_ALIASES.get(normalized, normalized)
+
+
+def _scope_selector_options():
+    options = {}
+    for key, cfg in _load_dummy_waste_config().items():
+        options[key] = {
+            'label': cfg.get('label', key.title()),
+            'food_types': list(cfg.get('food_types', {}).keys()),
+        }
+    return options
+
+
+def _resolve_food_type_config(scope_config, food_type):
+    if not food_type:
+        return None, None
+    normalized = food_type.strip().lower()
+    for name, cfg in scope_config.get('food_types', {}).items():
+        if name.lower() == normalized:
+            return name, cfg
+    return None, None
+
+
+def _generate_wave_series(seed, variance, length, label_builder):
+    series = []
+    for idx in range(length):
+        wave = math.sin(idx / 2.4) * variance
+        drift = math.cos(idx / 3.3) * variance * 0.35
+        seasonal = ((idx % 4) - 1.5) * variance * 0.08
+        value = max(round(seed + wave + drift + seasonal, 2), 0.05)
+        series.append({'label': label_builder(idx), 'value': value})
+    return series
+
+
+def _build_hourly_series(seed, variance):
+    return _generate_wave_series(
+        seed,
+        variance,
+        24,
+        lambda idx: f"{idx:02d}:00",
+    )
+
+
+def _build_daily_series(seed, variance, days=10):
+    today = datetime.now(IST_TZ).date()
+    def label_builder(offset):
+        target = today - timedelta(days=(days - 1 - offset))
+        return target.strftime('%d %b')
+    return _generate_wave_series(seed, variance, days, label_builder)
+
+
+def _apply_percentages(rows):
+    safe_rows = []
+    for row in rows or []:
+        if row.get('value') is None:
+            continue
+        safe_rows.append(dict(row))
+    total = sum(row['value'] for row in safe_rows) or 0.0
+    for row in safe_rows:
+        percent = (row['value'] / total * 100.0) if total else 0.0
+        row['percent'] = round(percent, 1)
+    return safe_rows
+
+
+def _build_dummy_dashboard_payload(scope_value, food_type_value):
+    config = _load_dummy_waste_config()
+    scope_key = _normalize_scope_key(scope_value)
+    default_scope = config.get('overall') or next(iter(config.values()), {})
+    scope_config = config.get(scope_key, default_scope)
+    available_food_types = list(scope_config.get('food_types', {}).keys())
+
+    food_label, food_config = _resolve_food_type_config(scope_config, food_type_value)
+
+    selection = food_config or scope_config
+    unit = selection.get('unit') or scope_config.get('unit') or 'kg'
+
+    hourly_series = selection.get('hourly_trend')
+    if hourly_series:
+        hourly_series = [
+            {'label': row.get('label'), 'value': row.get('value')}
+            for row in hourly_series
+            if row.get('label') is not None and row.get('value') is not None
+        ]
+    else:
+        hourly_series = _build_hourly_series(
+            selection.get('hourly_seed', scope_config.get('hourly_seed', 5.0)),
+            selection.get('hourly_variance', scope_config.get('hourly_variance', 1.0)),
+        )
+
+    daily_series = selection.get('daily_trend')
+    if daily_series:
+        daily_series = [
+            {'label': row.get('label'), 'value': row.get('value')}
+            for row in daily_series
+            if row.get('label') is not None and row.get('value') is not None
+        ]
+    else:
+        daily_series = _build_daily_series(
+            selection.get('daily_seed', scope_config.get('daily_seed', 60.0)),
+            selection.get('daily_variance', scope_config.get('daily_variance', 8.0)),
+        )
+
+    historical = {}
+    for period, info in (selection.get('historical') or {}).items():
+        historical[period] = {
+            'label': info.get('label', period.title()),
+            'value': info.get('value'),
+            'change': info.get('change'),
+        }
+
+    contributions = _apply_percentages(selection.get('contribution'))
+
+    payload = {
+        'scope': scope_key,
+        'scope_label': scope_config.get('label', scope_key.title()),
+        'unit': unit,
+        'food_type': food_label,
+        'food_type_label': food_label,
+        'available_food_types': available_food_types,
+        'historical': historical,
+        'hourly_trend': hourly_series,
+        'daily_trend': daily_series,
+        'contribution': contributions,
+        'description': selection.get('description') or scope_config.get('description'),
+        'last_updated': selection.get('last_updated') or datetime.utcnow().replace(tzinfo=UTC_TZ).isoformat(),
+    }
+    return payload
+
+
+def _precompute_dashboard_payloads():
+    config = _load_dummy_waste_config()
+    payloads = {}
+    for scope_key, scope_cfg in config.items():
+        scope_entry = {
+            '__default__': _build_dummy_dashboard_payload(scope_key, None),
+            'food_types': {},
+        }
+        for food_label in scope_cfg.get('food_types', {}).keys():
+            scope_entry['food_types'][food_label] = _build_dummy_dashboard_payload(scope_key, food_label)
+        payloads[scope_key] = scope_entry
+    return payloads
 
 
 def _to_datetime_utc(value):
@@ -178,11 +355,24 @@ def _write_session_to_db(session):
     except (TypeError, ValueError):
         sample_count = 0
 
+    detected_food = session.get('detected_food')
+    if detected_food is not None:
+        detected_food = str(detected_food)
+
+    food_confidence = session.get('food_confidence')
+    if food_confidence is not None:
+        try:
+            food_confidence = float(food_confidence)
+        except (TypeError, ValueError):
+            food_confidence = None
+
     payload = {
         'utensil_type': session.get('utensil_type', 'unknown'),
         'average_volume_ml': avg_volume,
         'average_percent_fill': avg_percent,
         'sample_count': sample_count,
+        'detected_food': detected_food,
+        'food_confidence': food_confidence,
         'started_at': started_at,
         'ended_at': ended_at,
         'created_at': created_at,
@@ -242,12 +432,22 @@ def _fetch_recent_sessions(limit=200):
         except (TypeError, ValueError):
             sample_count = 0
 
+        detected_food = data.get('detected_food') or None
+        food_confidence = data.get('food_confidence')
+        if food_confidence is not None:
+            try:
+                food_confidence = float(food_confidence)
+            except (TypeError, ValueError):
+                food_confidence = None
+
         sessions.append({
             'id': doc.id,
             'utensil_type': data.get('utensil_type', 'unknown'),
             'average_volume_ml': avg_volume,
             'average_percent_fill': avg_percent,
             'sample_count': sample_count,
+            'detected_food': detected_food,
+            'food_confidence': food_confidence,
             'started_at': _format_ts_for_display(data.get('started_at')),
             'ended_at': _format_ts_for_display(data.get('ended_at')),
             'created_at': _format_ts_for_display(data.get('created_at')),
@@ -263,11 +463,18 @@ def _dashboard_metrics(sessions):
     total_volume = sum(volume_values) if volume_values else 0.0
     mean_volume = (total_volume / len(volume_values)) if volume_values else None
     mean_percent = (sum(percent_values) / len(percent_values)) if percent_values else None
+    food_counter = Counter()
+    for session in sessions:
+        label = session.get('detected_food')
+        if label:
+            food_counter[label] += 1
+    top_foods = sorted(food_counter.items(), key=lambda item: (-item[1], item[0]))
     return {
         'total_sessions': total_sessions,
         'total_volume_ml': total_volume,
         'mean_volume_ml': mean_volume,
         'mean_percent_fill': mean_percent,
+        'food_counts': top_foods,
     }
 
 
@@ -276,6 +483,7 @@ class UtensilSessionTracker:
 
     def __init__(self, tolerance_frames=2):
         self.tolerance_frames = tolerance_frames
+        self.empty_required = 3
         self.lock = Lock()
         self._clear_state()
 
@@ -284,42 +492,69 @@ class UtensilSessionTracker:
         self.label = None
         self.volumes = []
         self.percents = []
+        self.food_labels = []
+        self.food_confidences = []
         self.started_at = None
         self.last_seen_at = None
         self.missed_frames = 0
         self.frame_count = 0
+        self.empty_streak = 0
 
-    def update(self, utensil_present, utensil_label, volume_ml, percent_fill):
+    def update(self, utensil_present, utensil_label, volume_ml, percent_fill,
+               food_label=None, food_confidence=None, empty_detected=False):
         now = datetime.utcnow()
         with self.lock:
             recorded_session = None
+            empty_detected = bool(empty_detected)
 
-            if utensil_present:
+            if utensil_present and not empty_detected:
                 if self.active and self.label and utensil_label and utensil_label != self.label:
                     recorded_session = self._finalize_locked(now)
+                    if recorded_session:
+                        return recorded_session
 
                 if not self.active:
                     self._start_locked(utensil_label, now)
 
+            if not self.active:
+                # Nothing to aggregate until a non-empty frame starts a session
+                self.empty_streak = 0
+                return None
+
+            if utensil_present:
                 self.missed_frames = 0
                 self.last_seen_at = now
                 self.frame_count += 1
-
-                if volume_ml is not None:
-                    try:
-                        self.volumes.append(float(volume_ml))
-                    except (TypeError, ValueError):
-                        pass
-                if percent_fill is not None:
-                    try:
-                        self.percents.append(float(percent_fill))
-                    except (TypeError, ValueError):
-                        pass
             else:
-                if self.active:
-                    self.missed_frames += 1
-                    if self.missed_frames >= self.tolerance_frames:
-                        recorded_session = self._finalize_locked(now)
+                # Utensil momentarily missing; do not finalise on absence.
+                self.missed_frames += 1
+                return None
+
+            if empty_detected:
+                self.empty_streak += 1
+                if self.empty_streak >= self.empty_required:
+                    recorded_session = self._finalize_locked(now)
+                return recorded_session
+
+            self.empty_streak = 0
+
+            if volume_ml is not None:
+                try:
+                    self.volumes.append(float(volume_ml))
+                except (TypeError, ValueError):
+                    pass
+            if percent_fill is not None:
+                try:
+                    self.percents.append(float(percent_fill))
+                except (TypeError, ValueError):
+                    pass
+            if food_label:
+                self.food_labels.append(str(food_label))
+                if food_confidence is not None:
+                    try:
+                        self.food_confidences.append(float(food_confidence))
+                    except (TypeError, ValueError):
+                        pass
 
             return recorded_session
 
@@ -330,8 +565,11 @@ class UtensilSessionTracker:
         self.last_seen_at = started_at
         self.volumes = []
         self.percents = []
+        self.food_labels = []
+        self.food_confidences = []
         self.missed_frames = 0
         self.frame_count = 0
+        self.empty_streak = 0
 
     def _finalize_locked(self, ended_at):
         if not self.active:
@@ -348,6 +586,14 @@ class UtensilSessionTracker:
         avg_percent = (sum(percent_values) / len(percent_values)) if percent_values else None
         sample_count = max(self.frame_count, len(volume_values), len(percent_values))
 
+        detected_food = None
+        if self.food_labels:
+            counts = Counter(self.food_labels)
+            detected_food = max(counts.items(), key=lambda item: (item[1], item[0]))[0]
+        avg_confidence = None
+        if self.food_confidences:
+            avg_confidence = sum(self.food_confidences) / len(self.food_confidences)
+
         session = {
             'utensil_type': self.label or 'unknown',
             'average_volume_ml': avg_volume,
@@ -355,6 +601,8 @@ class UtensilSessionTracker:
             'sample_count': sample_count,
             'started_at': self.started_at or ended_at,
             'ended_at': self.last_seen_at or ended_at,
+            'detected_food': detected_food,
+            'food_confidence': avg_confidence,
         }
 
         try:
@@ -404,6 +652,27 @@ def dashboard():
     return render_template('dashboard.html', sessions=sessions, metrics=metrics)
 
 
+@app.route('/live-dashboard')
+def live_dashboard():
+    scope_options = _scope_selector_options()
+    fallback_payloads = _precompute_dashboard_payloads()
+    initial_payload = (fallback_payloads.get('overall') or {}).get('__default__')
+    return render_template(
+        'live_dashboard.html',
+        scope_options=scope_options,
+        fallback_payloads=fallback_payloads,
+        initial_payload=initial_payload,
+    )
+
+
+@app.route('/api/live-dashboard-data')
+def live_dashboard_data_api():
+    scope = request.args.get('scope', 'overall')
+    food_type = request.args.get('food_type')
+    payload = _build_dummy_dashboard_payload(scope, food_type)
+    return jsonify(payload)
+
+
 
 def _decode_image_from_base64(data_url: str):
     # Accepts either data URL (data:image/jpeg;base64,...) or raw base64
@@ -445,6 +714,16 @@ def process():
 
     display = frame.copy()
 
+    classification = classify_food(frame)
+    food_label = None
+    food_confidence = None
+    if classification is not None:
+        food_label, food_confidence = classification
+
+    normalized_food_label = food_label.strip().lower() if food_label else None
+    empty_detected = normalized_food_label in EMPTY_FOOD_LABELS if normalized_food_label else False
+    skip_volume = empty_detected
+
     # Sensible Hough bounds based on frame size
     h, w = frame.shape[:2]
     min_radius = max(30, min(h, w) // 8)
@@ -461,31 +740,48 @@ def process():
         (cx, cy), (MA, ma), angle = ellipse
         cv2.ellipse(display, (int(cx), int(cy)), (int(MA/2), int(ma/2)), angle, 0, 360, (0, 255, 255), 2)
 
-        seg_mask, _ = segment_food_in_utensil(frame, ellipse, debug=False)
-        if seg_mask is not None:
-            # Overlay segmentation
-            overlay = display.copy()
-            overlay[seg_mask > 0] = (0, 0, 255)
-            display = cv2.addWeighted(display, 0.7, overlay, 0.3, 0)
+        if not skip_volume:
+            seg_mask, _ = segment_food_in_utensil(frame, ellipse, debug=False)
+            if seg_mask is not None:
+                # Overlay segmentation
+                overlay = display.copy()
+                overlay[seg_mask > 0] = (0, 0, 255)
+                display = cv2.addWeighted(display, 0.7, overlay, 0.3, 0)
 
-            # Compute metrics
-            d_mm = float(diameter_mm) if diameter_mm not in (None, '') else None
-            percent_fill, est_volume_ml = estimate_area_and_volume(
-                ellipse, seg_mask, d_mm, utensil, float(height_mm or 0)
-            )
+                # Compute metrics
+                d_mm = float(diameter_mm) if diameter_mm not in (None, '') else None
+                percent_fill, est_volume_ml = estimate_area_and_volume(
+                    ellipse, seg_mask, d_mm, utensil, float(height_mm or 0)
+                )
 
-    session_record = SESSION_TRACKER.update(ellipse is not None, utensil, est_volume_ml, percent_fill)
+    session_record = SESSION_TRACKER.update(
+        ellipse is not None,
+        utensil,
+        est_volume_ml,
+        percent_fill,
+        food_label=food_label,
+        food_confidence=food_confidence,
+        empty_detected=empty_detected,
+    )
 
     # HUD text
     y = 24
     txts = []
     txts.append(f"Utensil: {utensil}")
-    if percent_fill is not None:
-        txts.append(f"Fill: {percent_fill:.1f}%")
-    if est_volume_ml is not None:
-        txts.append(f"Vol: {est_volume_ml:.0f} ml")
-    if ellipse is None:
-        txts.append("Utensil not detected")
+    if food_label:
+        if food_confidence is not None:
+            txts.append(f"Food: {food_label} ({food_confidence * 100:.0f}%)")
+        else:
+            txts.append(f"Food: {food_label}")
+    if not skip_volume:
+        if percent_fill is not None:
+            txts.append(f"Fill: {percent_fill:.1f}%")
+        if est_volume_ml is not None:
+            txts.append(f"Vol: {est_volume_ml:.0f} ml")
+        if ellipse is None:
+            txts.append("Utensil not detected")
+    else:
+        txts.append("No food detected; estimation skipped")
     for i, t in enumerate(txts):
         cv2.putText(display, t, (10, 30 + i * y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2, cv2.LINE_AA)
 
@@ -494,7 +790,12 @@ def process():
         'percent_fill': percent_fill,
         'volume_ml': est_volume_ml,
         'overlay': data_url,
+        'food_label': food_label,
+        'food_confidence': food_confidence,
     }
+
+    if skip_volume:
+        response['message'] = 'No food detected; volume estimation skipped.'
 
     if session_record:
         response['session_recorded'] = True
@@ -503,6 +804,8 @@ def process():
             'average_volume_ml': session_record['average_volume_ml'],
             'average_percent_fill': session_record['average_percent_fill'],
             'sample_count': session_record['sample_count'],
+            'detected_food': session_record.get('detected_food'),
+            'food_confidence': session_record.get('food_confidence'),
             'started_at': session_record['started_at'].isoformat(timespec='seconds') + 'Z',
             'ended_at': session_record['ended_at'].isoformat(timespec='seconds') + 'Z',
             'started_at_ist': _format_ts_for_display(session_record['started_at']),

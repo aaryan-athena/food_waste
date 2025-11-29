@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live Waste Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              100: '#c7d2fe',
+              300: '#a5b4fc',
+              500: '#6366f1',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" integrity="sha256-s4B2di9zY7yekStouOA0gmeY213ya7YfAA7C56MTe8c=" crossorigin="anonymous"></script>
+</head>
+<body class="h-full bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 font-sans">
+  <div class="min-h-screen">
+    <header class="border-b border-white/10 bg-slate-900/70 backdrop-blur-md">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-5">
+        <div>
+          <p class="text-xs uppercase tracking-[0.4em] text-brand-100">Waste Intelligence</p>
+          <h1 class="mt-1 text-2xl font-semibold text-white">Live Waste Dashboard</h1>
+          <p class="mt-1 text-sm text-slate-300">Streaming insights across raw, semi-finished and finished preparations.</p>
+        </div>
+        <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:justify-end">
+          <a href="/dashboard" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 text-sm font-medium text-slate-200 transition hover:border-brand-500 hover:bg-brand-500/20 hover:text-white">
+            Session View
+          </a>
+          <a href="/" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-brand-500/40 bg-brand-500/20 px-4 text-sm font-medium text-white transition hover:border-brand-500 hover:bg-brand-500/40">
+            Back to Capture
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-6 pb-16 pt-10">
+      <section class="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-xl ring-1 ring-white/5">
+        <div class="grid gap-6 lg:grid-cols-2 lg:items-start">
+          <div class="max-w-xl">
+            <p class="text-xs uppercase tracking-[0.4em] text-brand-100">Control Center</p>
+            <h2 class="mt-2 text-3xl font-semibold text-white">Waste Analytics Command Center</h2>
+            <p id="selectionSummary" class="mt-2 text-base text-slate-200">Overall waste across all preparation stages.</p>
+            <p id="selectionDescription" class="mt-1 text-sm text-slate-400">Aggregate view across all preparation stages.</p>
+          </div>
+          <div class="w-full rounded-2xl border border-white/10 bg-white/5 p-4 lg:max-w-md lg:justify-self-end">
+            <div class="space-y-4">
+              <label class="block text-sm font-medium text-slate-300" for="scopeSelect">Scope (overall / division)</label>
+              <select id="scopeSelect" class="w-full rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none">
+                {% for key, option in scope_options.items() %}
+                  <option value="{{ key }}" {% if key == 'overall' %}selected{% endif %}>{{ option.label }}</option>
+                {% endfor %}
+              </select>
+              <label class="block text-sm font-medium text-slate-300" for="foodTypeSelect">Subdivision (food type)</label>
+              <select id="foodTypeSelect" class="w-full rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none disabled:opacity-40">
+                <option value="">Not applicable</option>
+              </select>
+              <p class="text-xs text-slate-400">Leave subdivision blank when not applicable. Dummy values refresh continuously for preview purposes.</p>
+            </div>
+          </div>
+        </div>
+        <p class="mt-4 text-xs text-slate-400">New dashboard runs independently of Firestore sessions and currently serves curated dummy data.</p>
+      </section>
+
+      <section class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" id="historicalCards">
+        <article data-period="day" class="rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow ring-1 ring-white/5">
+          <p class="text-xs uppercase tracking-wide text-slate-400" data-role="label">Last 24 hours</p>
+          <p class="mt-2 text-3xl font-semibold text-white" data-role="value">-</p>
+          <p class="mt-1 text-xs text-brand-300" data-role="change"></p>
+        </article>
+        <article data-period="week" class="rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow ring-1 ring-white/5">
+          <p class="text-xs uppercase tracking-wide text-slate-400" data-role="label">Last 7 days</p>
+          <p class="mt-2 text-3xl font-semibold text-white" data-role="value">-</p>
+          <p class="mt-1 text-xs text-brand-300" data-role="change"></p>
+        </article>
+        <article data-period="month" class="rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow ring-1 ring-white/5">
+          <p class="text-xs uppercase tracking-wide text-slate-400" data-role="label">Last 30 days</p>
+          <p class="mt-2 text-3xl font-semibold text-white" data-role="value">-</p>
+          <p class="mt-1 text-xs text-brand-300" data-role="change"></p>
+        </article>
+        <article data-period="year" class="rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow ring-1 ring-white/5">
+          <p class="text-xs uppercase tracking-wide text-slate-400" data-role="label">Year to date</p>
+          <p class="mt-2 text-3xl font-semibold text-white" data-role="value">-</p>
+          <p class="mt-1 text-xs text-brand-300" data-role="change"></p>
+        </article>
+      </section>
+
+      <section class="mt-10 grid gap-6 lg:grid-cols-2">
+        <article class="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-xl ring-1 ring-white/5">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-semibold text-white">Hourly Waste Trend</h3>
+              <p class="mt-1 text-sm text-slate-400">Last 24 hours (kg per hour).</p>
+            </div>
+            <div class="text-right text-xs text-slate-400">
+              <p>Last updated</p>
+              <p id="lastUpdatedStamp" class="font-medium text-white/80">--</p>
+            </div>
+          </div>
+          <div class="mt-6">
+            <canvas id="hourlyTrendChart" height="200"></canvas>
+          </div>
+          <div class="mt-6 flex min-h-[72px] items-center rounded-2xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-slate-200" id="hourlyInsight">
+            Awaiting data...
+          </div>
+        </article>
+        <article class="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-xl ring-1 ring-white/5">
+          <div>
+            <h3 class="text-lg font-semibold text-white">Daily Waste Trend</h3>
+            <p class="mt-1 text-sm text-slate-400">Rolling 10-day totals.</p>
+          </div>
+          <div class="mt-6">
+            <canvas id="dailyTrendChart" height="200"></canvas>
+          </div>
+          <div class="mt-6 flex min-h-[72px] items-center rounded-2xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-slate-200" id="dailyInsight">
+            Awaiting data...
+          </div>
+        </article>
+      </section>
+
+      <section class="mt-10 rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-xl ring-1 ring-white/5">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-semibold text-white">Contribution of Each Type</h3>
+            <p class="mt-1 text-sm text-slate-400">Share of total waste for the selected scope.</p>
+          </div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/40 bg-brand-500/10 px-3 py-1 text-xs text-brand-100">
+            Live simulation
+            <span class="h-2 w-2 animate-pulse rounded-full bg-brand-500"></span>
+          </div>
+        </div>
+        <div class="mt-6 grid gap-6 lg:grid-cols-2">
+          <div class="flex items-center justify-center">
+            <canvas id="contributionChart" width="240" height="240"></canvas>
+          </div>
+          <div class="space-y-4">
+            <div class="rounded-2xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-slate-200" id="contributionInsight">
+              Awaiting data...
+            </div>
+            <ul id="contributionList" class="space-y-3">
+              <li class="rounded-2xl border border-dashed border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-400">No data yet.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    window.__LIVE_SCOPE_OPTIONS__ = {{ scope_options | tojson }};
+    window.__LIVE_INITIAL_PAYLOAD__ = {{ initial_payload | tojson }};
+    window.__LIVE_FALLBACK_PAYLOADS__ = {{ fallback_payloads | tojson }};
+  </script>
+  <script>
+    (() => {
+      const scopeOptions = window.__LIVE_SCOPE_OPTIONS__ || {};
+      const fallbackPayloads = window.__LIVE_FALLBACK_PAYLOADS__ || {};
+      const initialPayload = window.__LIVE_INITIAL_PAYLOAD__;
+      const state = {
+        scope: 'overall',
+        foodType: '',
+      };
+      const selectors = {
+        scope: document.getElementById('scopeSelect'),
+        food: document.getElementById('foodTypeSelect'),
+        summary: document.getElementById('selectionSummary'),
+        description: document.getElementById('selectionDescription'),
+        updated: document.getElementById('lastUpdatedStamp'),
+        contributionList: document.getElementById('contributionList'),
+        hourlyInsight: document.getElementById('hourlyInsight'),
+        dailyInsight: document.getElementById('dailyInsight'),
+        contributionInsight: document.getElementById('contributionInsight'),
+      };
+      const numberFormatter = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 1 });
+      let hourlyChart;
+      let dailyChart;
+      let contributionChart;
+
+      const colors = ['#818cf8', '#38bdf8', '#f87171', '#fbbf24', '#34d399', '#f472b6', '#fb923c', '#a3e635'];
+
+      const fetchData = async () => {
+        const params = new URLSearchParams({ scope: state.scope });
+        if (state.foodType) {
+          params.append('food_type', state.foodType);
+        }
+        const response = await fetch(`/api/live-dashboard-data?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error('Failed to load dummy data');
+        }
+        const payload = await response.json();
+        applyPayload(payload);
+        return payload;
+      };
+
+      const formatValue = (value, unit) => {
+        if (value === null || value === undefined || Number.isNaN(value)) {
+          return '--';
+        }
+        return `${numberFormatter.format(value)} ${unit}`;
+      };
+
+      const setInsight = (element, text) => {
+        if (!element) return;
+        element.textContent = text || 'Awaiting data...';
+      };
+
+      const ensureHourlyFallback = (payload) => {
+        const historicalDay = payload.historical?.day?.value || 0;
+        const base = historicalDay ? historicalDay / 24 : 5;
+        const variance = base * 0.35;
+        const series = [];
+        for (let hour = 0; hour < 24; hour += 1) {
+          const wave = Math.sin(hour / 2.5) * variance;
+          const trend = Math.cos(hour / 4) * variance * 0.3;
+          const value = Math.max(base + wave + trend, 0.2);
+          series.push({ label: `${hour.toString().padStart(2, '0')}:00`, value: Number(value.toFixed(2)) });
+        }
+        return series;
+      };
+
+      const ensureDailyFallback = (payload) => {
+        const refValue = payload.historical?.week?.value || payload.historical?.month?.value || 100;
+        const avg = refValue / 7;
+        const days = 10;
+        const today = new Date();
+        const series = [];
+        for (let idx = 0; idx < days; idx += 1) {
+          const date = new Date(today);
+          date.setDate(date.getDate() - (days - 1 - idx));
+          const wave = Math.sin(idx / 3) * (avg * 0.25);
+          const trend = idx * (avg * 0.02);
+          const value = Math.max(avg + wave + trend, 0.5);
+          series.push({
+            label: date.toLocaleDateString(undefined, { day: '2-digit', month: 'short' }),
+            value: Number(value.toFixed(1)),
+          });
+        }
+        return series;
+      };
+
+      const ensureContributionFallback = (payload) => {
+        const historicalMonth = payload.historical?.month?.value || 100;
+        const contributions = payload.historical
+          ? ['Prep', 'Production', 'Service']
+          : ['Category A', 'Category B', 'Category C'];
+        const base = historicalMonth / contributions.length;
+        const rows = contributions.map((label, idx) => ({
+          label,
+          value: Number((base * (1 + idx * 0.1)).toFixed(1)),
+        }));
+        const total = rows.reduce((sum, row) => sum + row.value, 0) || 1;
+        rows.forEach((row) => {
+          row.percent = Number(((row.value / total) * 100).toFixed(1));
+        });
+        return rows;
+      };
+
+      const updateHistoricalCards = (payload) => {
+        document.querySelectorAll('#historicalCards [data-period]').forEach((card) => {
+          const period = card.getAttribute('data-period');
+          const info = payload.historical?.[period];
+          const labelEl = card.querySelector('[data-role="label"]');
+          const valueEl = card.querySelector('[data-role="value"]');
+          const changeEl = card.querySelector('[data-role="change"]');
+          if (info) {
+            labelEl.textContent = info.label || '';
+            valueEl.textContent = formatValue(info.value, payload.unit);
+            changeEl.textContent = info.change || '';
+          } else {
+            labelEl.textContent = period;
+            valueEl.textContent = '--';
+            changeEl.textContent = '';
+          }
+        });
+      };
+
+      const buildLineChart = (canvas, data, chartInstance, accent) => {
+        const labels = data.map((item) => item.label);
+        const values = data.map((item) => item.value);
+        const dataset = {
+          label: `Waste (${accent.unit || ''})`,
+          data: values,
+          fill: true,
+          tension: 0.35,
+          borderColor: accent.line,
+          backgroundColor: accent.fill,
+          pointRadius: 0,
+        };
+        const options = {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: { color: '#94a3b8', maxRotation: 0 },
+              grid: { color: 'rgba(255,255,255,0.05)' },
+            },
+            y: {
+              ticks: { color: '#94a3b8' },
+              grid: { color: 'rgba(255,255,255,0.05)' },
+            },
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.formattedValue} ${accent.unit || ''}`,
+              },
+            },
+          },
+        };
+        if (!chartInstance) {
+          chartInstance = new Chart(canvas, {
+            type: 'line',
+            data: { labels, datasets: [dataset] },
+            options,
+          });
+        } else {
+          chartInstance.data.labels = labels;
+          chartInstance.data.datasets[0] = dataset;
+          chartInstance.update();
+        }
+        return chartInstance;
+      };
+
+      const buildBarChart = (canvas, data, chartInstance, accent) => {
+        const labels = data.map((item) => item.label);
+        const values = data.map((item) => item.value);
+        const dataset = {
+          label: `Waste (${accent.unit || ''})`,
+          data: values,
+          borderRadius: 8,
+          backgroundColor: accent.fill,
+          borderColor: accent.line,
+        };
+        const options = {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: { color: '#94a3b8', maxRotation: 0 },
+              grid: { display: false },
+            },
+            y: {
+              ticks: { color: '#94a3b8' },
+              grid: { color: 'rgba(255,255,255,0.05)' },
+            },
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.formattedValue} ${accent.unit || ''}`,
+              },
+            },
+          },
+        };
+        if (!chartInstance) {
+          chartInstance = new Chart(canvas, {
+            type: 'bar',
+            data: { labels, datasets: [dataset] },
+            options,
+          });
+        } else {
+          chartInstance.data.labels = labels;
+          chartInstance.data.datasets[0] = dataset;
+          chartInstance.update();
+        }
+        return chartInstance;
+      };
+
+      const updateContributionChart = (payload) => {
+        const data = payload.contribution && payload.contribution.length
+          ? payload.contribution
+          : ensureContributionFallback(payload);
+        payload.contribution = data;
+        const labels = data.map((item) => item.label);
+        const values = data.map((item) => item.value);
+        const palette = values.map((_, idx) => colors[idx % colors.length]);
+        const ctx = document.getElementById('contributionChart');
+        const dataset = {
+          data: values,
+          backgroundColor: palette,
+          borderColor: '#0f172a',
+          borderWidth: 2,
+        };
+        const options = {
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.label}: ${numberFormatter.format(ctx.parsed)} ${payload.unit}`,
+              },
+            },
+          },
+          cutout: '65%',
+        };
+        if (!contributionChart) {
+          contributionChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels, datasets: [dataset] },
+            options,
+          });
+        } else {
+          contributionChart.data.labels = labels;
+          contributionChart.data.datasets[0] = dataset;
+          contributionChart.update();
+        }
+
+        selectors.contributionList.innerHTML = '';
+        if (!payload.contribution || !payload.contribution.length) {
+          const li = document.createElement('li');
+          li.className = 'rounded-2xl border border-dashed border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-400';
+          li.textContent = 'No contribution data for this selection.';
+          selectors.contributionList.appendChild(li);
+        } else {
+          payload.contribution.forEach((entry) => {
+            const li = document.createElement('li');
+            li.className = 'flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3';
+            li.innerHTML = `
+              <div>
+                <p class="text-sm font-medium text-white">${entry.label}</p>
+                <p class="text-xs text-slate-400">${numberFormatter.format(entry.value)} ${payload.unit}</p>
+              </div>
+              <span class="text-sm font-semibold text-brand-100">${entry.percent}%</span>
+            `;
+            selectors.contributionList.appendChild(li);
+          });
+        }
+      };
+
+      const describeHourlyInsight = (payload) => {
+        const data = payload.hourly_trend || [];
+        if (!data.length) {
+          setInsight(selectors.hourlyInsight, 'Awaiting data...');
+          return;
+        }
+        const peak = data.reduce((best, row) => (row.value > best.value ? row : best), data[0]);
+        const lull = data.reduce((worst, row) => (row.value < worst.value ? row : worst), data[0]);
+        const swing = lull.value ? ((peak.value - lull.value) / lull.value) * 100 : 0;
+        const text = `Peak hour ${peak.label} at ${formatValue(peak.value, payload.unit)}; quietest ${lull.label} at ${formatValue(lull.value, payload.unit)} (${swing >= 0 ? '+' : ''}${swing.toFixed(0)}% swing).`;
+        setInsight(selectors.hourlyInsight, text);
+      };
+
+      const describeDailyInsight = (payload) => {
+        const data = payload.daily_trend || [];
+        if (!data.length) {
+          setInsight(selectors.dailyInsight, 'Awaiting data...');
+          return;
+        }
+        const latest = data[data.length - 1];
+        const first = data[0];
+        const best = data.reduce((max, row) => (row.value > max.value ? row : max), data[0]);
+        const deltaPct = first.value ? ((latest.value - first.value) / first.value) * 100 : 0;
+        const direction = deltaPct >= 0 ? 'up' : 'down';
+        const text = `${latest.label} closed at ${formatValue(latest.value, payload.unit)}, ${direction} ${Math.abs(deltaPct).toFixed(1)}% from ${first.label}. Peak day ${best.label} (${formatValue(best.value, payload.unit)}).`;
+        setInsight(selectors.dailyInsight, text);
+      };
+
+      const describeContributionInsight = (payload) => {
+        const rows = payload.contribution || ensureContributionFallback(payload);
+        if (!rows.length) {
+          setInsight(selectors.contributionInsight, 'Awaiting data...');
+          return;
+        }
+        const sorted = [...rows].sort((a, b) => (b.value || 0) - (a.value || 0));
+        const total = rows.reduce((sum, row) => sum + (row.value || 0), 0);
+        const percentFor = (row) => {
+          if (row.percent !== undefined && row.percent !== null) {
+            return row.percent;
+          }
+          return total ? ((row.value || 0) / total) * 100 : 0;
+        };
+        const top = sorted[0];
+        const second = sorted[1];
+        const pairShare = total ? (((top.value || 0) + (second?.value || 0)) / total) * 100 : null;
+        const text = `${top.label} leads with ${percentFor(top).toFixed(1)}% of waste (${formatValue(top.value, payload.unit)}). Top ${second ? 'two' : 'category'} cover ${pairShare ? pairShare.toFixed(1) : percentFor(top).toFixed(1)}% of the total.`;
+        setInsight(selectors.contributionInsight, text);
+      };
+
+      const applyPayload = (payload) => {
+        selectors.summary.textContent = payload.food_type_label
+          ? `${payload.food_type_label} within ${payload.scope_label}`
+          : `${payload.scope_label} totals`;
+        selectors.description.textContent = payload.description || 'Live telemetry';
+        if (payload.last_updated) {
+          const ts = new Date(payload.last_updated);
+          selectors.updated.textContent = ts.toLocaleString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: 'short',
+          });
+        }
+        updateHistoricalCards(payload);
+        const ensuredHourlyTrend = payload.hourly_trend && payload.hourly_trend.length
+          ? payload.hourly_trend
+          : ensureHourlyFallback(payload);
+
+        const ensuredDailyTrend = payload.daily_trend && payload.daily_trend.length
+          ? payload.daily_trend
+          : ensureDailyFallback(payload);
+
+        payload.hourly_trend = ensuredHourlyTrend;
+        payload.daily_trend = ensuredDailyTrend;
+        payload.contribution = payload.contribution && payload.contribution.length
+          ? payload.contribution
+          : ensureContributionFallback(payload);
+
+        hourlyChart = buildLineChart(
+          document.getElementById('hourlyTrendChart'),
+          ensuredHourlyTrend || [],
+          hourlyChart,
+          { unit: payload.unit, line: '#6366f1', fill: 'rgba(99,102,241,0.25)' },
+        );
+
+        dailyChart = buildBarChart(
+          document.getElementById('dailyTrendChart'),
+          ensuredDailyTrend || [],
+          dailyChart,
+          { unit: payload.unit, line: '#38bdf8', fill: 'rgba(56,189,248,0.45)' },
+        );
+
+        updateContributionChart(payload);
+        describeHourlyInsight(payload);
+        describeDailyInsight(payload);
+        describeContributionInsight(payload);
+      };
+
+      const lookupFallbackPayload = () => {
+        const scopeMap = fallbackPayloads[state.scope];
+        if (!scopeMap) {
+          return null;
+        }
+        if (state.foodType) {
+          return scopeMap.food_types?.[state.foodType] || null;
+        }
+        return scopeMap.__default__ || null;
+      };
+
+      const applyFallbackForCurrentSelection = () => {
+        const fallback = lookupFallbackPayload();
+        if (fallback) {
+          applyPayload(fallback);
+          return true;
+        }
+        return false;
+      };
+
+      const requestLatestData = () => {
+        fetchData().catch((err) => {
+          console.error('live dashboard fetch failed', err);
+          applyFallbackForCurrentSelection();
+        });
+      };
+
+      const rebuildFoodTypeOptions = () => {
+        const config = scopeOptions[state.scope] || { food_types: [] };
+        const hasOptions = config.food_types && config.food_types.length;
+        selectors.food.innerHTML = '';
+        if (!hasOptions) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = 'Not applicable';
+          opt.selected = true;
+          selectors.food.appendChild(opt);
+          selectors.food.setAttribute('disabled', 'disabled');
+          state.foodType = '';
+          return;
+        }
+
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.textContent = 'All food types';
+        selectors.food.appendChild(defaultOpt);
+
+        config.food_types.forEach((label) => {
+          const option = document.createElement('option');
+          option.value = label;
+          option.textContent = label;
+          selectors.food.appendChild(option);
+        });
+
+        selectors.food.removeAttribute('disabled');
+        selectors.food.value = state.foodType || '';
+      };
+
+      selectors.scope.addEventListener('change', () => {
+        state.scope = selectors.scope.value;
+        state.foodType = '';
+        rebuildFoodTypeOptions();
+        applyFallbackForCurrentSelection();
+        requestLatestData();
+      });
+
+      selectors.food.addEventListener('change', () => {
+        state.foodType = selectors.food.value || '';
+        applyFallbackForCurrentSelection();
+        requestLatestData();
+      });
+
+      rebuildFoodTypeOptions();
+      if (initialPayload) {
+        state.scope = initialPayload.scope || state.scope;
+        selectors.scope.value = state.scope;
+        state.foodType = initialPayload.food_type || '';
+        if (state.foodType) {
+          selectors.food.value = state.foodType;
+        }
+        applyPayload(initialPayload);
+      } else {
+        applyFallbackForCurrentSelection();
+      }
+      requestLatestData();
+
+      setInterval(() => {
+        requestLatestData();
+      }, 20000);
+    })();
+  </script>
+</body>
+</html>
