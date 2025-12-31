@@ -1,12 +1,52 @@
 import cv2
 import numpy as np
+from typing import Optional, Tuple, Dict, Any
+
+# Import steel utensil detection for non-circular/metallic vessels
+try:
+    from .vision_steel import (
+        detect_steel_utensil,
+        segment_food_in_steel_utensil,
+        estimate_volume_from_contour,
+        process_frame_steel_utensil,
+        draw_detection_overlay,
+    )
+    STEEL_DETECTION_AVAILABLE = True
+except ImportError:
+    STEEL_DETECTION_AVAILABLE = False
 
 
-def detect_utensil_ellipse(frame, utensil_hint='auto', min_radius=60, max_radius=400, debug=False):
+def detect_utensil_ellipse(frame, utensil_hint='auto', min_radius=60, max_radius=400, debug=False, use_steel_detection=True):
     """
     Detect a circular/elliptical utensil region.
     Returns ellipse as ((cx,cy), (MA,ma), angle) or None.
+    
+    Args:
+        frame: BGR image
+        utensil_hint: 'auto', 'plate', 'bowl', 'steel', 'rectangular'
+        min_radius: Minimum radius for circle detection
+        max_radius: Maximum radius for circle detection
+        debug: Print debug info
+        use_steel_detection: Try steel utensil detection first
     """
+    # Try steel utensil detection first if available and hinted
+    if use_steel_detection and STEEL_DETECTION_AVAILABLE:
+        if utensil_hint in ('steel', 'rectangular', 'auto'):
+            contour, mask, info = detect_steel_utensil(frame, utensil_hint, debug=debug)
+            if contour is not None and len(contour) >= 5:
+                try:
+                    ellipse = cv2.fitEllipse(contour)
+                    if debug:
+                        print(f"Steel utensil detected: {info.get('shape_type')}")
+                    return ellipse
+                except cv2.error:
+                    # Fall back to bounding ellipse
+                    x, y, w, h = cv2.boundingRect(contour)
+                    cx = x + w / 2
+                    cy = y + h / 2
+                    return ((cx, cy), (float(w), float(h)), 0.0)
+    
+    # Original circle/ellipse detection for white plates
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (7,7), 1.5)
 
@@ -66,11 +106,13 @@ def _ellipse_mask(shape, ellipse):
     return mask
 
 
-def _sample_base_color_lab(img, ellipse, ring_frac=0.12):
-    # Sample a ring near the inner rim to estimate utensil interior color
+def _sample_base_color_lab(img, ellipse, ring_frac=0.12, is_steel=False):
+    """
+    Sample a ring near the inner rim to estimate utensil interior color.
+    For steel utensils, uses different sampling strategy.
+    """
     (cx, cy), (MA, ma), angle = ellipse
     inner = ((cx, cy), (MA*(1-0.02), ma*(1-0.02)), angle)
-    outer = ((cx, cy), (MA*(1-0.02), ma*(1-0.02)), angle)
 
     # Create masks for full interior and a ring near edge
     full_mask = _ellipse_mask(img.shape, inner)
@@ -88,11 +130,24 @@ def _sample_base_color_lab(img, ellipse, ring_frac=0.12):
     return med.astype(np.float32), full_mask
 
 
-def segment_food_in_utensil(img, ellipse, debug=False):
+def segment_food_in_utensil(img, ellipse, debug=False, use_steel_segmentation=True):
     """
     Returns binary mask of food region inside the utensil ellipse.
     Uses Lab color delta from base and refines with GrabCut.
+    For steel utensils, uses specialized segmentation.
     """
+    # Try steel segmentation first if available
+    if use_steel_segmentation and STEEL_DETECTION_AVAILABLE:
+        h, w = img.shape[:2]
+        mask = _ellipse_mask(img.shape, ellipse)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if contours:
+            contour = contours[0]
+            food_mask, info = segment_food_in_steel_utensil(img, contour, mask, debug)
+            if food_mask is not None and np.count_nonzero(food_mask) > 0:
+                return food_mask, info
+    
+    # Fall back to original LAB-based segmentation
     base_lab, full_mask = _sample_base_color_lab(img, ellipse)
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB).astype(np.float32)
 

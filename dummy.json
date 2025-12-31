@@ -884,180 +884,376 @@
   "finished": {
     "label": "Finished Goods",
     "unit": "kg",
-    "description": "Prepared meals or plated dishes left unsold.",
+    "description": "Prepared meals and dishes - tracked via smart detection system.",
     "historical": {
       "day": {
         "label": "Last 24 hours",
-        "value": 4.66,
-        "change": "+0.9% vs prior day"
+        "value": 12.85,
+        "change": "+2.3% vs prior day"
       },
       "week": {
         "label": "Last 7 days",
-        "value": 30.87,
-        "change": "+1.4% vs prior week"
+        "value": 89.95,
+        "change": "+1.8% vs prior week"
       },
       "month": {
         "label": "Last 30 days",
-        "value": 123.97,
-        "change": "+3.5% vs prior month"
+        "value": 385.50,
+        "change": "+4.2% vs prior month"
       },
       "year": {
         "label": "Year to date",
-        "value": 1455.3,
-        "change": "+2.1% vs last year"
+        "value": 4692.30,
+        "change": "+2.5% vs last year"
       }
     },
-    "hourly_seed": 0.32,
-    "hourly_variance": 0.11,
-    "daily_seed": 5.14,
-    "daily_variance": 1.1,
+    "hourly_seed": 0.54,
+    "hourly_variance": 0.18,
+    "daily_seed": 12.85,
+    "daily_variance": 2.75,
     "contribution": [
       {
-        "label": "Main Course Plates",
-        "value": 0.54
+        "label": "Rice",
+        "value": 3.21
       },
       {
-        "label": "Grab & Go",
-        "value": 0.97
+        "label": "Dal Tadka",
+        "value": 2.57
       },
       {
-        "label": "Desserts",
-        "value": 0.95
+        "label": "Paneer Makhni",
+        "value": 2.05
+      },
+      {
+        "label": "Chicken Curry",
+        "value": 1.80
+      },
+      {
+        "label": "Gobhi Mattar",
+        "value": 1.54
+      },
+      {
+        "label": "Corn Palak",
+        "value": 1.03
+      },
+      {
+        "label": "Kheer",
+        "value": 0.65
       }
     ],
     "food_types": {
-      "Main Course Plates": {
-        "label": "Main Course Plates",
+      "Rice": {
+        "label": "Rice",
         "unit": "kg",
-        "description": "Buffet and plated entrees discarded post-service.",
+        "description": "Steamed basmati rice - most commonly wasted item.",
         "historical": {
           "day": {
             "label": "Last 24 hours",
-            "value": 1.83,
-            "change": "+1.2% vs prior day"
+            "value": 3.21,
+            "change": "+3.5% vs prior day"
           },
           "week": {
             "label": "Last 7 days",
-            "value": 12.49,
+            "value": 22.47,
+            "change": "+2.1% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 96.30,
+            "change": "+4.8% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 1172.82,
+            "change": "+2.9% vs last year"
+          }
+        },
+        "hourly_seed": 0.13,
+        "hourly_variance": 0.05,
+        "daily_seed": 3.21,
+        "daily_variance": 0.72,
+        "contribution": [
+          {
+            "label": "Lunch Service",
+            "value": 1.45
+          },
+          {
+            "label": "Dinner Service",
+            "value": 1.28
+          },
+          {
+            "label": "Buffet Leftover",
+            "value": 0.48
+          }
+        ]
+      },
+      "Dal Tadka": {
+        "label": "Dal Tadka",
+        "unit": "kg",
+        "description": "Yellow lentils tempered with spices.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 2.57,
+            "change": "+2.8% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 17.99,
             "change": "+1.9% vs prior week"
           },
           "month": {
             "label": "Last 30 days",
-            "value": 4.49,
-            "change": "+3.6% vs prior month"
+            "value": 77.10,
+            "change": "+3.9% vs prior month"
           },
           "year": {
             "label": "Year to date",
-            "value": 63.1,
-            "change": "+2.2% vs last year"
+            "value": 938.05,
+            "change": "+2.4% vs last year"
           }
         },
-        "hourly_seed": 0.14,
+        "hourly_seed": 0.11,
         "hourly_variance": 0.04,
-        "daily_seed": 1.83,
-        "daily_variance": 0.49,
+        "daily_seed": 2.57,
+        "daily_variance": 0.58,
         "contribution": [
           {
-            "label": "Menu Swaps",
-            "value": 1.04
+            "label": "Lunch Service",
+            "value": 1.15
           },
           {
-            "label": "Portion Returns",
-            "value": 0.84
+            "label": "Dinner Service",
+            "value": 0.98
           },
           {
-            "label": "Quality Holds",
-            "value": 0.88
+            "label": "Overflow Prep",
+            "value": 0.44
           }
         ]
       },
-      "Grab & Go": {
-        "label": "Grab & Go",
+      "Paneer Makhni": {
+        "label": "Paneer Makhni",
         "unit": "kg",
-        "description": "Packaged meals and sandwiches nearing expiry.",
+        "description": "Cottage cheese in rich tomato-butter gravy.",
         "historical": {
           "day": {
             "label": "Last 24 hours",
-            "value": 1.59,
-            "change": "+0.8% vs prior day"
+            "value": 2.05,
+            "change": "+1.9% vs prior day"
           },
           "week": {
             "label": "Last 7 days",
-            "value": 10.54,
-            "change": "+1.4% vs prior week"
+            "value": 14.35,
+            "change": "+1.5% vs prior week"
           },
           "month": {
             "label": "Last 30 days",
-            "value": 41.9,
-            "change": "+3.0% vs prior month"
-          },
-          "year": {
-            "label": "Year to date",
-            "value": 487.55,
-            "change": "+1.7% vs last year"
-          }
-        },
-        "hourly_seed": 0.12,
-        "hourly_variance": 0.04,
-        "daily_seed": 1.59,
-        "daily_variance": 0.36,
-        "contribution": [
-          {
-            "label": "Expiry Writes",
-            "value": 9.31
-          },
-          {
-            "label": "Damaged Packs",
-            "value": 0.61
-          },
-          {
-            "label": "Donation Pulls",
-            "value": 5.14
-          }
-        ]
-      },
-      "Desserts": {
-        "label": "Desserts",
-        "unit": "kg",
-        "description": "Cakes and pastries unsold or damaged.",
-        "historical": {
-          "day": {
-            "label": "Last 24 hours",
-            "value": 1.23,
-            "change": "+0.6% vs prior day"
-          },
-          "week": {
-            "label": "Last 7 days",
-            "value": 7.84,
-            "change": "+1.1% vs prior week"
-          },
-          "month": {
-            "label": "Last 30 days",
-            "value": 32.59,
+            "value": 61.50,
             "change": "+3.2% vs prior month"
           },
           "year": {
             "label": "Year to date",
-            "value": 384.65,
+            "value": 748.25,
+            "change": "+2.1% vs last year"
+          }
+        },
+        "hourly_seed": 0.09,
+        "hourly_variance": 0.03,
+        "daily_seed": 2.05,
+        "daily_variance": 0.46,
+        "contribution": [
+          {
+            "label": "Premium Counter",
+            "value": 0.92
+          },
+          {
+            "label": "Main Line",
+            "value": 0.78
+          },
+          {
+            "label": "Events Catering",
+            "value": 0.35
+          }
+        ]
+      },
+      "Chicken Curry": {
+        "label": "Chicken Curry",
+        "unit": "kg",
+        "description": "Traditional Indian chicken curry with spices.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.80,
+            "change": "+2.2% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 12.60,
+            "change": "+1.7% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 54.00,
+            "change": "+3.5% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 657.00,
+            "change": "+2.3% vs last year"
+          }
+        },
+        "hourly_seed": 0.08,
+        "hourly_variance": 0.03,
+        "daily_seed": 1.80,
+        "daily_variance": 0.41,
+        "contribution": [
+          {
+            "label": "Lunch Rush",
+            "value": 0.81
+          },
+          {
+            "label": "Dinner Service",
+            "value": 0.68
+          },
+          {
+            "label": "Late Orders",
+            "value": 0.31
+          }
+        ]
+      },
+      "Gobhi Mattar": {
+        "label": "Gobhi Mattar",
+        "unit": "kg",
+        "description": "Cauliflower and green peas curry.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.54,
+            "change": "+1.6% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 10.78,
+            "change": "+1.3% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 46.20,
+            "change": "+2.8% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 562.10,
             "change": "+1.9% vs last year"
           }
         },
-        "hourly_seed": 0.1,
-        "hourly_variance": 0.04,
-        "daily_seed": 1.34,
-        "daily_variance": 0.36,
+        "hourly_seed": 0.06,
+        "hourly_variance": 0.02,
+        "daily_seed": 1.54,
+        "daily_variance": 0.35,
         "contribution": [
           {
-            "label": "Decoration Damage",
-            "value": 0.6
+            "label": "Veg Counter",
+            "value": 0.69
           },
           {
-            "label": "Leftover Buffets",
-            "value": 0.87
+            "label": "Thali Combos",
+            "value": 0.54
           },
           {
-            "label": "Display Dry-out",
-            "value": 4.41
+            "label": "Side Orders",
+            "value": 0.31
+          }
+        ]
+      },
+      "Corn Palak": {
+        "label": "Corn Palak",
+        "unit": "kg",
+        "description": "Sweet corn in creamy spinach gravy.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 1.03,
+            "change": "+1.4% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 7.21,
+            "change": "+1.1% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 30.90,
+            "change": "+2.5% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 375.95,
+            "change": "+1.7% vs last year"
+          }
+        },
+        "hourly_seed": 0.04,
+        "hourly_variance": 0.02,
+        "daily_seed": 1.03,
+        "daily_variance": 0.23,
+        "contribution": [
+          {
+            "label": "Health Menu",
+            "value": 0.46
+          },
+          {
+            "label": "Kids Section",
+            "value": 0.35
+          },
+          {
+            "label": "Regular Line",
+            "value": 0.22
+          }
+        ]
+      },
+      "Kheer": {
+        "label": "Kheer",
+        "unit": "kg",
+        "description": "Traditional rice pudding dessert.",
+        "historical": {
+          "day": {
+            "label": "Last 24 hours",
+            "value": 0.65,
+            "change": "+0.9% vs prior day"
+          },
+          "week": {
+            "label": "Last 7 days",
+            "value": 4.55,
+            "change": "+0.8% vs prior week"
+          },
+          "month": {
+            "label": "Last 30 days",
+            "value": 19.50,
+            "change": "+1.8% vs prior month"
+          },
+          "year": {
+            "label": "Year to date",
+            "value": 237.25,
+            "change": "+1.2% vs last year"
+          }
+        },
+        "hourly_seed": 0.03,
+        "hourly_variance": 0.01,
+        "daily_seed": 0.65,
+        "daily_variance": 0.15,
+        "contribution": [
+          {
+            "label": "Dessert Counter",
+            "value": 0.29
+          },
+          {
+            "label": "Thali Dessert",
+            "value": 0.22
+          },
+          {
+            "label": "Takeaway",
+            "value": 0.14
           }
         ]
       }
@@ -1093,115 +1289,115 @@
       },
       {
         "label": "07:00",
-        "value": 0.29
+        "value": 0.35
       },
       {
         "label": "08:00",
-        "value": 0.37
+        "value": 0.48
       },
       {
         "label": "09:00",
-        "value": 0.41
+        "value": 0.52
       },
       {
         "label": "10:00",
-        "value": 0.46
+        "value": 0.58
       },
       {
         "label": "11:00",
-        "value": 0.49
+        "value": 0.72
       },
       {
         "label": "12:00",
-        "value": 0.47
+        "value": 0.89
       },
       {
         "label": "13:00",
-        "value": 0.45
+        "value": 0.95
       },
       {
         "label": "14:00",
-        "value": 0.43
+        "value": 0.78
       },
       {
         "label": "15:00",
-        "value": 0.41
+        "value": 0.54
       },
       {
         "label": "16:00",
-        "value": 0.39
+        "value": 0.45
       },
       {
         "label": "17:00",
-        "value": 0.36
+        "value": 0.42
       },
       {
         "label": "18:00",
-        "value": 0.34
+        "value": 0.56
       },
       {
         "label": "19:00",
-        "value": 0.33
+        "value": 0.78
       },
       {
         "label": "20:00",
-        "value": 0.33
+        "value": 0.92
       },
       {
         "label": "21:00",
-        "value": 0.31
+        "value": 0.85
       },
       {
         "label": "22:00",
-        "value": 0.29
+        "value": 0.62
       },
       {
         "label": "23:00",
-        "value": 0.28
+        "value": 0.42
       }
     ],
     "daily_trend": [
       {
-        "label": "18 Nov",
-        "value": 7.8
+        "label": "22 Dec",
+        "value": 11.20
       },
       {
-        "label": "19 Nov",
-        "value": 8.07
+        "label": "23 Dec",
+        "value": 11.85
       },
       {
-        "label": "20 Nov",
-        "value": 8.46
+        "label": "24 Dec",
+        "value": 12.45
       },
       {
-        "label": "21 Nov",
-        "value": 8.6
+        "label": "25 Dec",
+        "value": 14.20
       },
       {
-        "label": "22 Nov",
-        "value": 8.99
+        "label": "26 Dec",
+        "value": 13.75
       },
       {
-        "label": "23 Nov",
-        "value": 4.39
+        "label": "27 Dec",
+        "value": 12.90
       },
       {
-        "label": "24 Nov",
-        "value": 4.79
+        "label": "28 Dec",
+        "value": 13.15
       },
       {
-        "label": "25 Nov",
-        "value": 9.92
+        "label": "29 Dec",
+        "value": 12.60
       },
       {
-        "label": "26 Nov",
-        "value": 4.72
+        "label": "30 Dec",
+        "value": 13.35
       },
       {
-        "label": "27 Nov",
-        "value": 10.05
+        "label": "31 Dec",
+        "value": 12.85
       }
     ],
-    "last_updated": "2025-11-27T15:13:00+05:30"
+    "last_updated": "2025-12-31T15:30:00+05:30"
   }
 }

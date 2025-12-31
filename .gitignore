@@ -98,3 +98,6 @@ node_modules/
 # Misc
 pip-selfcheck.json
 cython_debug/
+data/
+training_data/
+test_output/
